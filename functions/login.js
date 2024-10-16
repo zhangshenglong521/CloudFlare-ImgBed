@@ -16,5 +16,5 @@ export async function onRequestPost(context) {
       return new Response('Unauthorized', { status: 401 })
     }
     //返回登录成功
-    return new Response('Login success'+env.TG_BOT_TOKEN+","+env.TG_CHAT_ID, { status: 200 })
+    return new Response('Login success', { status: 200 })
 }
