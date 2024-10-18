@@ -107,6 +107,10 @@ export async function onRequestPost(context) {  // Contents of context object
             }
         }
     }
+
+    let uniqueKey = url.searchParams.get('uniqueKey');
+    uniqueKey = !uniqueKey || uniqueKey != "false" ? "true" : "false";
+
     // 如果 Referer 中没有 authCode，从请求头中获取
     if (!authCode) {
         authCode = request.headers.get('authCode');
@@ -156,8 +160,12 @@ export async function onRequestPost(context) {  // Contents of context object
         const id = fileInfo.file_id;
         //const fullId = id + '.' + fileExt;
         // 构建独一无二的 ID
-        const unique_index = time + Math.floor(Math.random() * 10000);
-        const fullId = fileName? unique_index + '_' + fileName : unique_index + '.' + fileExt;
+        let fullId = fileName;
+        if(uniqueKey == "true"){
+            const unique_index = time + Math.floor(Math.random() * 10000);
+            fullId = fileName? unique_index + '_' + fileName : unique_index + '.' + fileExt;
+        }
+
         // 若上传成功，将响应返回给客户端
         if (response.ok) {
             res = new Response(
