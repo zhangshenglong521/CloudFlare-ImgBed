@@ -43,11 +43,12 @@ export async function onRequestPost(context) {  // Contents of context object
     if (typeof env.img_url == "undefined" || env.img_url == null || env.img_url == "") {
         // img_url 未定义或为空的处理逻辑
         return new Response('Error: Please configure KV database', { status: 500 });
-    } 
+    }
 
     const formdata = await clonedRequest.formData();
     const fileType = formdata.get('file').type;
-    const fileName = formdata.get('file').name;
+    let fileName = formdata.get('file').name;
+    fileName = fileName.replace("/", "_");
     let fileExt = fileName.split('.').pop(); // 文件扩展名
     if (!isExtValid(fileExt)) {
         // 如果文件名中没有扩展名，尝试从文件类型中获取
@@ -78,8 +79,8 @@ export async function onRequestPost(context) {  // Contents of context object
 
     const defaultType = {'url': 'sendDocument', 'type': 'document'};
 
-    let sendFunction = Object.keys(fileTypeMap).find(key => fileType.startsWith(key)) 
-        ? fileTypeMap[Object.keys(fileTypeMap).find(key => fileType.startsWith(key))] 
+    let sendFunction = Object.keys(fileTypeMap).find(key => fileType.startsWith(key))
+        ? fileTypeMap[Object.keys(fileTypeMap).find(key => fileType.startsWith(key))]
         : defaultType;
 
     // GIF 特殊处理
@@ -160,7 +161,7 @@ export async function onRequestPost(context) {  // Contents of context object
         // 若上传成功，将响应返回给客户端
         if (response.ok) {
             res = new Response(
-                JSON.stringify([{ 'src': `/file/${fullId}` }]), 
+                JSON.stringify([{ 'src': `/file/${fullId}` }]),
                 {
                     status: 200,
                     headers: { 'Content-Type': 'application/json' }
@@ -168,7 +169,7 @@ export async function onRequestPost(context) {  // Contents of context object
             );
         }
         const apikey = env.ModerateContentApiKey;
-    
+
         if (apikey == undefined || apikey == null || apikey == "") {
             await env.img_url.put(fullId, "", {
                 metadata: { FileName: fileName, FileType: fileType, ListType: "None", Label: "None", TimeStamp: time, Channel: "TelegramNew", TgFileId: id, UploadIP: uploadIp },
@@ -242,7 +243,7 @@ async function getFilePath(env, file_id) {
             "User-Agent": " Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome"
           },
         })
-    
+
         let responseData = await res.json();
         if (responseData.ok) {
           const file_path = responseData.result.file_path
@@ -256,10 +257,10 @@ async function getFilePath(env, file_id) {
 }
 
 function isExtValid(fileExt) {
-    return ['jpeg', 'jpg', 'png', 'gif', 'webp', 
+    return ['jpeg', 'jpg', 'png', 'gif', 'webp',
     'mp4', 'mp3', 'ogg',
     'mp3', 'wav', 'flac', 'aac', 'opus',
-    'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'pdf', 
+    'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'pdf',
     'txt', 'md', 'json', 'xml', 'html', 'css', 'js', 'ts', 'go', 'java', 'php', 'py', 'rb', 'sh', 'bat', 'cmd', 'ps1', 'psm1', 'psd', 'ai', 'sketch', 'fig', 'svg', 'eps', 'zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz', 'apk', 'exe', 'msi', 'dmg', 'iso', 'torrent', 'webp', 'ico', 'svg', 'ttf', 'otf', 'woff', 'woff2', 'eot', 'apk', 'crx', 'xpi', 'deb', 'rpm', 'jar', 'war', 'ear', 'img', 'iso', 'vdi', 'ova', 'ovf', 'qcow2', 'vmdk', 'vhd', 'vhdx', 'pvm', 'dsk', 'hdd', 'bin', 'cue', 'mds', 'mdf', 'nrg', 'ccd', 'cif', 'c2d', 'daa', 'b6t', 'b5t', 'bwt', 'isz', 'isz', 'cdi', 'flp', 'uif', 'xdi', 'sdi'
     ].includes(fileExt);
 }
