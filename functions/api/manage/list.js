@@ -53,7 +53,7 @@ async function getStudyJavaFiles(records) {
 
     records.keys = [];
     responseData.data.records.forEach(it => {
-        records.keys.push(it.FileId);
+        records.keys.push({metadata: it});
     })
     records.cursor = responseData.data.cursor;
 }
