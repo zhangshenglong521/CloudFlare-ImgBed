@@ -48,7 +48,7 @@ async function getStudyJavaFiles(records) {
     const res = await fetch('https://www.studyjava.cn/api/cloudflare/files?cursor='+records.cursor+'&limit='+records.limit)
     let responseData = res.json();
     if (!responseData.flag) {
-        throw new Error(`HTTP error! message: ${res}`);
+        throw new Error(`HTTP error! message: ${JSON.stringify(responseData)}`);
     }
 
     records.keys = [];
