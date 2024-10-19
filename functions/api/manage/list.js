@@ -12,25 +12,25 @@ export async function onRequest(context) {
     let cursor = null;
 
     do {
-        let records = await env.img_url.list({
-          limit: 1000,
-          cursor,
-        });
+        // let records = await env.img_url.list({
+        //   limit: 1000,
+        //   cursor,
+        // });
+        // allRecords.push(...records.keys);
+        //
+        // // 保存Java
+        // for (const key of allRecords) {
+        //     const imgRecord = await env.img_url.getWithMetadata(key)
+        //
+        //     if(imgRecord.metadata){
+        //         imgRecord.metadata.FileId = key
+        //         await saveFile(imgRecord.metadata);
+        //     }
+        //
+        // }
+
+        const records = await getStudyJavaFiles();
         allRecords.push(...records.keys);
-
-        // 保存Java
-        for (const key of allRecords) {
-            const imgRecord = await env.img_url.getWithMetadata(key)
-
-            if(imgRecord.metadata){
-                imgRecord.metadata.FileId = key
-                await saveFile(imgRecord.metadata);
-            }
-
-        }
-
-
-        records = await getStudyJavaFiles();
 
         cursor = records.cursor;
     } while (cursor);
