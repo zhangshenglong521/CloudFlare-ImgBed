@@ -12,9 +12,7 @@ export async function onRequest(context) {
     params.id = decodeURIComponent(params.id);
 
     // await env.img_url.delete(params.id);
-    const res = await deleteStudyJavaFile(params);
-
-    return {metadata: res.data};
+    await deleteStudyJavaFile(params);
 
     const info = JSON.stringify(params.id);
     return new Response(info);
