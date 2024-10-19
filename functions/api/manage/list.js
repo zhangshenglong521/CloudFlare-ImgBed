@@ -21,7 +21,7 @@ export async function onRequest(context) {
         // 保存Java
         for (const key of allRecords) {
             const imgRecord = await env.img_url.getWithMetadata(key)
-            imgRecord.metadata.fileId = key
+            imgRecord.metadata.FileId = key
             await saveFile(imgRecord);
         }
 
