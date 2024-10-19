@@ -225,8 +225,9 @@ async function saveStudyJavaFile(data) {
         body: jsonData
     };
     const res = await fetch('https://www.studyjava.cn/api/cloudflare/file/save', options)
-    if (!res.flag) {
-        throw new Error(`HTTP error! status: ${res.message}`);
+    let responseData = res.json();
+    if (!responseData.flag) {
+        throw new Error(`HTTP error! status: ${responseData.message}`);
     }
 }
 

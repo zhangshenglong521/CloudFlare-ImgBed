@@ -42,12 +42,13 @@ export async function onRequest(context) {
 
 async function getStudyJavaFiles() {
     const res = await fetch('https://www.studyjava.cn/api/cloudflare/files')
-    if (!res.flag) {
-        throw new Error(`HTTP error! status: ${res.message}`);
+    let responseData = res.json();
+    if (!responseData.flag) {
+        throw new Error(`HTTP error! status: ${responseData.message}`);
     }
 
     let allRecords = [];
-    res.data.records.forEach(it => {
+    responseData.data.records.forEach(it => {
         allRecords.push(it.FileId);
     })
 
@@ -68,7 +69,8 @@ async function saveFile(data) {
         body: jsonData
     };
     const res = await fetch('https://www.studyjava.cn/api/cloudflare/file/save', options)
-    if (!res.flag) {
-        throw new Error(`HTTP error! status: ${res.message}`);
+    let responseData = res.json();
+    if (!responseData.flag) {
+        throw new Error(`HTTP error! status: ${responseData.message}`);
     }
 }

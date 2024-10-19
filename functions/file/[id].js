@@ -167,11 +167,12 @@ async function getFileContent(request, max_retries = 2) {
 
 async function getStudyJavaFile(id) {
     const res = await fetch('https://www.studyjava.cn/api/cloudflare/file/'+id)
-    if (!res.flag) {
-        throw new Error(`HTTP error! status: ${res.message}`);
+    let responseData = await res.json();
+    if (!responseData.flag) {
+        throw new Error(`HTTP error! status: ${responseData.message}`);
     }
 
-    return {metadata: res.data};
+    return {metadata: responseData.data};
 }
 
 async function getFilePath(env, file_id) {
