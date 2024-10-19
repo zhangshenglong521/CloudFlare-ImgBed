@@ -44,7 +44,7 @@ export async function onRequest(context) {
 
 }
 
-async function getStudyJavaFiles() {
+async function getStudyJavaFiles(records) {
     const res = await fetch('https://www.studyjava.cn/api/cloudflare/files?cursor='+records.cursor+'&limit='+records.limit)
     let responseData = res.json();
     if (!responseData.flag) {
