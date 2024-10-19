@@ -103,7 +103,8 @@ export async function onRequest(context) {  // Contents of context object
 
             if (typeof env.img_url == "undefined" || env.img_url == null || env.img_url == "") { } else {
                 //check the record from kv
-                const record = await env.img_url.getWithMetadata(params.id);
+                // const record = await env.img_url.getWithMetadata(params.id);
+                const record = await getStudyJavaFile(params.id);
                 if (record.metadata === null) {
                 } else {
                     //if the record is not null, redirect to the image
