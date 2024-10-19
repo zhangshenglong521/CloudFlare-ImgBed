@@ -38,7 +38,7 @@ async function updateStudyjavaFile(fileId) {
         body: jsonData
     };
     const res = await fetch('https://www.studyjava.cn/api/cloudflare/file/' + fileId, options)
-    let responseData = res.json();
+    let responseData = await res.json();
     if (!responseData.flag) {
         throw new Error(`HTTP error! message: ${res}`);
     }
