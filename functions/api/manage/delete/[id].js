@@ -10,9 +10,24 @@ export async function onRequest(context) {
     } = context;
     // 解码params.id
     params.id = decodeURIComponent(params.id);
-    
-    await env.img_url.delete(params.id);
+
+    // await env.img_url.delete(params.id);
+    const res = await deleteStudyJavaFile(params);
+
+    return {metadata: res.data};
+
     const info = JSON.stringify(params.id);
     return new Response(info);
 
   }
+
+async function deleteStudyJavaFile(params) {
+    const options = {
+        method: 'DELETE'
+    };
+    const res = await fetch('https://www.studyjava.cn/api/cloudflare/file/' + params.id, options)
+    if (!res.flag) {
+        throw new Error(`HTTP error! status: ${res.message}`);
+    }
+    return res;
+}

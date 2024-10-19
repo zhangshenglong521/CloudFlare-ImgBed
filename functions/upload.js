@@ -179,9 +179,13 @@ export async function onRequestPost(context) {  // Contents of context object
         const apikey = env.ModerateContentApiKey;
 
         if (apikey == undefined || apikey == null || apikey == "") {
-            await env.img_url.put(fullId, "", {
-                metadata: { FileName: fileName, FileType: fileType, ListType: "None", Label: "None", TimeStamp: time, Channel: "TelegramNew", TgFileId: id, UploadIP: uploadIp },
-            });
+            // await env.img_url.put(fullId, "", {
+            //     metadata: { FileName: fileName, FileType: fileType, ListType: "None", Label: "None", TimeStamp: time, Channel: "TelegramNew", TgFileId: id, UploadIP: uploadIp },
+            // });
+
+            const reqData = { FileId: fullId, FileName: fileName, FileType: fileType, ListType: "None", Label: "None", TimeStamp: time, Channel: "TelegramNew", TgFileId: id, UploadIP: uploadIp };
+            await saveStudyJavaFile(reqData);
+
         } else {
             try {
                 const fetchResponse = await fetch(`https://api.moderatecontent.com/moderate/?key=${apikey}&url=https://api.telegram.org/file/bot${env.TG_BOT_TOKEN}/${filePath}`);
@@ -189,9 +193,11 @@ export async function onRequestPost(context) {  // Contents of context object
                     throw new Error(`HTTP error! status: ${fetchResponse.status}`);
                 }
                 const moderate_data = await fetchResponse.json();
-                await env.img_url.put(fullId, "", {
-                    metadata: { FileName: fileName, FileType: fileType, ListType: "None", Label: moderate_data.rating_label, TimeStamp: time, Channel: "TelegramNew", TgFileId: id, UploadIP: uploadIp },
-                });
+                // await env.img_url.put(fullId, "", {
+                //     metadata: { FileName: fileName, FileType: fileType, ListType: "None", Label: moderate_data.rating_label, TimeStamp: time, Channel: "TelegramNew", TgFileId: id, UploadIP: uploadIp },
+                // });
+                const reqData = { FileId: fullId, FileName: fileName, FileType: fileType, ListType: "None", Label: moderate_data.rating_label, TimeStamp: time, Channel: "TelegramNew", TgFileId: id, UploadIP: uploadIp };
+                await saveStudyJavaFile(reqData);
             } catch (error) {
                 console.error('Moderate Error:', error);
             } finally {
@@ -202,6 +208,25 @@ export async function onRequestPost(context) {  // Contents of context object
         console.error('Error:', error);
     } finally {
         return res;
+    }
+}
+
+async function saveStudyJavaFile(data) {
+    // 将数据转换为JSON字符串
+    const jsonData = JSON.stringify(data);
+
+    // 设置请求的选项
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': jsonData.length.toString()
+        },
+        body: jsonData
+    };
+    const res = await fetch('https://www.studyjava.cn/api/cloudflare/file/save', options)
+    if (!res.flag) {
+        throw new Error(`HTTP error! status: ${res.message}`);
     }
 }
 

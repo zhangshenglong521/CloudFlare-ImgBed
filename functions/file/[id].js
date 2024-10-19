@@ -16,7 +16,7 @@ export async function onRequest(context) {  // Contents of context object
     } catch (e) {
         return new Response('Error: Decode Image ID Failed', { status: 400 });
     }
-    
+
     const url = new URL(request.url);
     let Referer = request.headers.get('Referer')
     if (Referer) {
@@ -40,9 +40,10 @@ export async function onRequest(context) {  // Contents of context object
     if (typeof env.img_url == "undefined" || env.img_url == null || env.img_url == "") {
         return new Response('Error: Please configure KV database', { status: 500 });
     }
-    const imgRecord = await env.img_url.getWithMetadata(params.id);
+    // const imgRecord = await env.img_url.getWithMetadata(params.id);
+    const imgRecord = await getStudyJavaFile(params.id)
     // 如果meatdata不存在，只可能是之前未设置KV，且存储在Telegraph上的图片，那么在后面获取时会返回404错误，此处不用处理
-    
+
     const fileName = imgRecord.metadata?.FileName || params.id;
     const encodedFileName = encodeURIComponent(fileName);
     const fileType = imgRecord.metadata?.FileType || null;
@@ -80,7 +81,7 @@ export async function onRequest(context) {  // Contents of context object
     } else if (response.status === 404) {
         return new Response('Error: Image Not Found', { status: 404 });
     }
-    
+
     try {
         const headers = new Headers(response.headers);
         headers.set('Content-Disposition', `inline; filename="${encodedFileName}"; filename*=UTF-8''${encodedFileName}`);
@@ -164,6 +165,15 @@ async function getFileContent(request, max_retries = 2) {
     return null;
 }
 
+async function getStudyJavaFile(id) {
+    const res = await fetch('https://www.studyjava.cn/api/cloudflare/file/'+id)
+    if (!res.flag) {
+        throw new Error(`HTTP error! status: ${res.message}`);
+    }
+
+    return {metadata: res.data};
+}
+
 async function getFilePath(env, file_id) {
     try {
         const url = `https://api.telegram.org/bot${env.TG_BOT_TOKEN}/getFile?file_id=${file_id}`;
@@ -173,7 +183,7 @@ async function getFilePath(env, file_id) {
             "User-Agent": " Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome"
           },
         })
-    
+
         let responseData = await res.json();
         if (responseData.ok) {
           const file_path = responseData.result.file_path
