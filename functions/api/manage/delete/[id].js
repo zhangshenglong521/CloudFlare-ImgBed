@@ -27,7 +27,7 @@ async function deleteStudyJavaFile(params) {
     };
     const res = await fetch('https://www.studyjava.cn/api/cloudflare/file/' + params.id, options)
     if (!res.flag) {
-        throw new Error(`HTTP error! status: ${res.message}`);
+        throw new Error(`HTTP error! message: ${res}`);
     }
     return res;
 }

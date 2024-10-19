@@ -169,7 +169,7 @@ async function getStudyJavaFile(id) {
     const res = await fetch('https://www.studyjava.cn/api/cloudflare/file/'+id)
     let responseData = await res.json();
     if (!responseData.flag) {
-        throw new Error(`HTTP error! status: ${responseData.message}`);
+        throw new Error(`HTTP error! message: ${res}`);
     }
 
     return {metadata: responseData.data};

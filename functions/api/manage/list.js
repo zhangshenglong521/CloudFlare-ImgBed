@@ -28,8 +28,12 @@ export async function onRequest(context) {
         //     }
         //
         // }
+        let records = {
+            limit: 1000,
+            cursor,
+        };
 
-        const records = await getStudyJavaFiles();
+        await getStudyJavaFiles(records);
         allRecords.push(...records.keys);
 
         cursor = records.cursor;
@@ -41,18 +45,16 @@ export async function onRequest(context) {
 }
 
 async function getStudyJavaFiles() {
-    const res = await fetch('https://www.studyjava.cn/api/cloudflare/files')
+    const res = await fetch('https://www.studyjava.cn/api/cloudflare/files?cursor='+records.cursor+'&limit='+records.limit)
     let responseData = res.json();
     if (!responseData.flag) {
-        throw new Error(`HTTP error! status: ${responseData.message}`);
+        throw new Error(`HTTP error! message: ${res}`);
     }
 
-    let allRecords = [];
+    records.keys = [];
     responseData.data.records.forEach(it => {
-        allRecords.push(it.FileId);
+        records.keys.push(it.FileId);
     })
-
-    return {keys: allRecords, cursor: res.data.cursor}
 }
 
 async function saveFile(data) {
@@ -71,6 +73,6 @@ async function saveFile(data) {
     const res = await fetch('https://www.studyjava.cn/api/cloudflare/file/save', options)
     let responseData = res.json();
     if (!responseData.flag) {
-        throw new Error(`HTTP error! status: ${responseData.message}`);
+        throw new Error(`HTTP error! message: ${res}`);
     }
 }
