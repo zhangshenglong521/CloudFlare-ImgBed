@@ -9,7 +9,7 @@ export async function onRequest(context) {
         data, // arbitrary space for passing data between middlewares
     } = context;
     let allRecords = [];
-    let cursor = null;
+    let cursor = 0;
 
     do {
         // let records = await env.img_url.list({
@@ -48,13 +48,14 @@ async function getStudyJavaFiles(records) {
     const res = await fetch('https://www.studyjava.cn/api/cloudflare/files?cursor='+records.cursor+'&limit='+records.limit)
     let responseData = res.json();
     if (!responseData.flag) {
-        throw new Error(`HTTP error! message: ${JSON.stringify(responseData)}`);
+        throw new Error(`HTTP error! message: ${JSON.stringify(res)}`);
     }
 
     records.keys = [];
     responseData.data.records.forEach(it => {
         records.keys.push(it.FileId);
     })
+    records.cursor = responseData.data.cursor;
 }
 
 async function saveFile(data) {
