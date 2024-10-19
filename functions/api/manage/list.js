@@ -21,8 +21,12 @@ export async function onRequest(context) {
         // 保存Java
         for (const key of allRecords) {
             const imgRecord = await env.img_url.getWithMetadata(key)
-            imgRecord.metadata.FileId = key
-            await saveFile(imgRecord);
+
+            if(imgRecord.metadata){
+                imgRecord.metadata.FileId = key
+                await saveFile(imgRecord.metadata);
+            }
+
         }
 
 
@@ -52,7 +56,7 @@ async function getStudyJavaFiles() {
 
 async function saveFile(data) {
     // 将数据转换为JSON字符串
-    const jsonData = JSON.stringify(reqData);
+    const jsonData = JSON.stringify(data);
 
     // 设置请求的选项
     const options = {
