@@ -18,7 +18,7 @@ export async function onRequest(context) {
     // value.metadata.ListType = "Block"
     // await env.img_url.put(params.id,"",{metadata: value.metadata});
 
-    const value = getStudyJavaFile(params.id);
+    const value = await getStudyJavaFile(params.id);
     value.metadata.ListType = "Block"
     await updateStudyjavaFile(value);
 
