@@ -38,11 +38,10 @@ export async function onRequest(context) {
     //
     //     cursor = records.cursor;
     // } while (cursor);
-    // const clonedRequest = await request.clone();
-    // const formdata = await clonedRequest.formData();
-    const page = request.params.page
-    const pageSize = request.params.pageSize
-    const keywords = request.params.keywords
+    const url = new URL(request.url);
+    const page = url.searchParams.get("page")
+    const pageSize = url.searchParams.get("pageSize")
+    const keywords = url.searchParams.get("keywords")
     let param = {
         page: page,
         pageSize: pageSize,
