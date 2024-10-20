@@ -50,7 +50,7 @@ export async function onRequest(context) {
     };
     const responseData = await getStudyJavaFiles(param);
 
-    const info = JSON.stringify({total: responseData.data.total, data: responseData.data.records});
+    const info = JSON.stringify({total: responseData.total, data: responseData.records});
     return new Response(info);
 
 }
