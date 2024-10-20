@@ -54,7 +54,7 @@ export async function onRequest(context) {
     responseData.records.forEach(it => {
         datas.push({metadata: it, name: it.FileId});
     })
-    const info = JSON.stringify({total: responseData.total, keys: datas});
+    const info = JSON.stringify({total: responseData.total, data: datas});
     return new Response(info);
 
 }
