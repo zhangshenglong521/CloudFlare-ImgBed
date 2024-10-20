@@ -44,7 +44,7 @@ export async function onRequest(context) {
     const keywords = url.searchParams.get("keywords")
     let param = {
         page: page,
-        pageSize: pageSize,
+        size: pageSize,
         keywords: keywords,
     };
     const responseData = await getStudyJavaFiles(param);
