@@ -8,54 +8,77 @@ export async function onRequest(context) {
         next, // used for middleware or to fetch assets
         data, // arbitrary space for passing data between middlewares
     } = context;
-    let allRecords = [];
-    let cursor = 0;
+    // let allRecords = [];
+    // let cursor = 0;
+    //
+    // do {
+    //     // let records = await env.img_url.list({
+    //     //   limit: 1000,
+    //     //   cursor,
+    //     // });
+    //     // allRecords.push(...records.keys);
+    //     //
+    //     // // 保存Java
+    //     // for (const key of allRecords) {
+    //     //     const imgRecord = await env.img_url.getWithMetadata(key)
+    //     //
+    //     //     if(imgRecord.metadata){
+    //     //         imgRecord.metadata.FileId = key
+    //     //         await saveFile(imgRecord.metadata);
+    //     //     }
+    //     //
+    //     // }
+    //     let records = {
+    //         limit: 1000,
+    //         cursor,
+    //     };
+    //
+    //     await getStudyJavaFiles(records);
+    //     allRecords.push(...records.keys);
+    //
+    //     cursor = records.cursor;
+    // } while (cursor);
+    const page = request.getParameter("page")
+    const pageSize = request.getParameter("pageSize")
+    const keywords = request.getParameter("keywords")
+    let param = {
+        page: page,
+        pageSize: pageSize,
+        keywords: keywords,
+    };
+    const responseData = await getStudyJavaFiles(param);
 
-    do {
-        // let records = await env.img_url.list({
-        //   limit: 1000,
-        //   cursor,
-        // });
-        // allRecords.push(...records.keys);
-        //
-        // // 保存Java
-        // for (const key of allRecords) {
-        //     const imgRecord = await env.img_url.getWithMetadata(key)
-        //
-        //     if(imgRecord.metadata){
-        //         imgRecord.metadata.FileId = key
-        //         await saveFile(imgRecord.metadata);
-        //     }
-        //
-        // }
-        let records = {
-            limit: 1000,
-            cursor,
-        };
-
-        await getStudyJavaFiles(records);
-        allRecords.push(...records.keys);
-
-        cursor = records.cursor;
-    } while (cursor);
-
-    const info = JSON.stringify(allRecords);
+    const info = JSON.stringify({total: responseData.data.total, data: responseData.data.records});
     return new Response(info);
 
 }
 
-async function getStudyJavaFiles(records) {
-    const res = await fetch('https://www.studyjava.cn/api/cloudflare/files?cursor='+records.cursor+'&limit='+records.limit)
+async function getStudyJavaFiles(params) {
+    let url = "https://www.studyjava.cn/api/cloudflare/files";
+    //拼接参数
+    let paramsArray = [];
+    Object.keys(params).forEach(key => {
+        if (params[key]){
+            paramsArray.push(key + '=' + params[key])
+        }
+    })
+    if (url.search(/\?/) === -1) {
+        url += '?' + paramsArray.join('&')
+    } else {
+        url += '&' + paramsArray.join('&')
+    }
+    const res = await fetch(url)
     let responseData = await res.json();
     if (!responseData.flag) {
         throw new Error(`HTTP error! message: ${JSON.stringify(res)}`);
     }
 
-    records.keys = [];
-    responseData.data.records.forEach(it => {
-        records.keys.push({metadata: it, name: it.FileId});
-    })
-    records.cursor = responseData.data.cursor;
+    // records.keys = [];
+    // responseData.data.records.forEach(it => {
+    //     records.keys.push({metadata: it, name: it.FileId});
+    // })
+    // records.cursor = responseData.data.cursor;
+    return responseData.data;
 }
 
 async function saveFile(data) {
