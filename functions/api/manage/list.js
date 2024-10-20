@@ -42,10 +42,12 @@ export async function onRequest(context) {
     const page = url.searchParams.get("page")
     const pageSize = url.searchParams.get("pageSize")
     const keywords = url.searchParams.get("keywords")
+    const ip = url.searchParams.get("ip")
     let param = {
         page: page,
         size: pageSize,
         keywords: keywords,
+        ip: ip,
     };
     const responseData = await getStudyJavaFiles(param);
 
